@@ -46,7 +46,7 @@ impl Boid {
         }
     }
 
-    pub fn next(&self, dt: Update, boids: &[Boid], settings: &Settings) -> Boid {
+    pub fn next(&self, dt: f32, boids: &[Boid], settings: &Settings) -> Boid {
         let mut boid = self.clone();
 
         let mut alignment_heading = Vec2::ZERO;
@@ -117,14 +117,14 @@ impl Boid {
             boid.steer_towards(-Vec2::Y, settings.border_weight, settings);
         }
 
-        boid.velocity += boid.acceleration * dt.since_last.as_secs_f32();
+        boid.velocity += boid.acceleration * dt;
         boid.velocity = boid
             .velocity
             .clamp_length(settings.boid_min_speed, settings.boid_max_speed);
 
-        boid.position += boid.velocity * dt.since_last.as_secs_f32();
+        boid.position += boid.velocity * dt;
 
-        if random_f32() < settings.mutation_rate * dt.since_last.as_secs_f32() {
+        if random_f32() < settings.mutation_rate * dt {
             boid.party = Party::random();
         }
 
