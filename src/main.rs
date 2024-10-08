@@ -6,7 +6,7 @@ pub mod update;
 pub mod view;
 
 use boid::Boid;
-use config::{WINDOW_HEIGHT, WINDOW_WIDTH};
+use config::{NUM_BOIDS, WINDOW_HEIGHT, WINDOW_WIDTH};
 use model::Model;
 use nannou::prelude::*;
 
@@ -27,7 +27,7 @@ fn model(app: &App) -> Model {
         .build()
         .unwrap();
 
-    let boids = (0..100).map(Boid::new).collect();
+    let boids = (0..NUM_BOIDS).map(Boid::new).collect();
 
     Model { window, boids }
 }
