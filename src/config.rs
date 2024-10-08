@@ -18,4 +18,6 @@ pub const BORDER_WEIGHT: f32 = 10.0;
 pub const PREFERENCE_MULTIPLIER: f32 = 2.0;
 pub const AVOIDANCE_MULTIPLIER: f32 = 10.0;
 
+pub const MUTATION_RATE: f32 = 0.1;
+
 pub const BOID_SIZE: f32 = 10.0;

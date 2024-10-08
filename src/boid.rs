@@ -4,14 +4,26 @@ use nannou::prelude::*;
 
 use crate::config::{
     ALIGNMENT_WEIGHT, AVOIDANCE_MULTIPLIER, BOID_AVOID_RADIUS, BOID_MAX_SPEED, BOID_MIN_SPEED,
-    BOID_STEER_FORCE, BOID_VIEW_RADIUS, BORDER_WEIGHT, COHESION_WEIGHT, PREFERENCE_MULTIPLIER,
-    SEPARATION_WEIGHT, WINDOW_HEIGHT, WINDOW_WIDTH,
+    BOID_STEER_FORCE, BOID_VIEW_RADIUS, BORDER_WEIGHT, COHESION_WEIGHT, MUTATION_RATE,
+    PREFERENCE_MULTIPLIER, SEPARATION_WEIGHT, WINDOW_HEIGHT, WINDOW_WIDTH,
 };
 
 #[derive(Clone, PartialEq)]
 pub enum Party {
     RED,
     BLUE,
+}
+
+impl Party {
+    pub fn random() -> Option<Self> {
+        if random_f32() < 0.1 {
+            None
+        } else if random_f32() < 0.5 {
+            Some(Party::RED)
+        } else {
+            Some(Party::BLUE)
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -34,13 +46,7 @@ impl Boid {
             velocity: Vec2::X.rotate(random_range(0.0, TAU))
                 * random_range(BOID_MIN_SPEED, BOID_MAX_SPEED),
             acceleration: Vec2::ZERO,
-            party: if random_f32() < 0.1 {
-                None
-            } else if random_f32() < 0.5 {
-                Some(Party::RED)
-            } else {
-                Some(Party::BLUE)
-            },
+            party: Party::random(),
         }
     }
 
@@ -107,11 +113,9 @@ impl Boid {
             boid.steer_towards(-Vec2::X, BORDER_WEIGHT);
         }
         if boid.position.y < -(WINDOW_HEIGHT as f32 / 2.0) + BOID_AVOID_RADIUS {
-            boid.acceleration = Vec2::ZERO;
             boid.steer_towards(Vec2::Y, BORDER_WEIGHT);
         }
         if boid.position.y > WINDOW_HEIGHT as f32 / 2.0 - BOID_AVOID_RADIUS {
-            boid.acceleration = Vec2::ZERO;
             boid.steer_towards(-Vec2::Y, BORDER_WEIGHT);
         }
 
@@ -119,6 +123,10 @@ impl Boid {
         boid.velocity = boid.velocity.clamp_length(BOID_MIN_SPEED, BOID_MAX_SPEED);
 
         boid.position += boid.velocity * dt.since_last.as_secs_f32();
+
+        if random_f32() < MUTATION_RATE * dt.since_last.as_secs_f32() {
+            boid.party = Party::random();
+        }
 
         boid
     }
