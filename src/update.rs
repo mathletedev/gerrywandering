@@ -6,6 +6,6 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
     model.boids = model
         .boids
         .iter()
-        .map(|boid| boid.next(update, &model.boids))
+        .map(|boid| boid.next(update, &model.boids, &model.settings))
         .collect();
 }

@@ -1,6 +1,6 @@
 use nannou::prelude::*;
 
-use crate::{boid::Party, config::BOID_SIZE, model::Model};
+use crate::{boid::Party, model::Model, settings::BOID_SIZE};
 
 pub fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();

@@ -2,11 +2,7 @@ use std::f32::consts::TAU;
 
 use nannou::prelude::*;
 
-use crate::config::{
-    ALIGNMENT_WEIGHT, AVOIDANCE_MULTIPLIER, BOID_AVOID_RADIUS, BOID_MAX_SPEED, BOID_MIN_SPEED,
-    BOID_STEER_FORCE, BOID_VIEW_RADIUS, BORDER_WEIGHT, COHESION_WEIGHT, MUTATION_RATE,
-    PREFERENCE_MULTIPLIER, SEPARATION_WEIGHT, WINDOW_HEIGHT, WINDOW_WIDTH,
-};
+use crate::settings::{Settings, WINDOW_HEIGHT, WINDOW_WIDTH};
 
 #[derive(Clone, PartialEq)]
 pub enum Party {
@@ -36,7 +32,7 @@ pub struct Boid {
 }
 
 impl Boid {
-    pub fn new(id: u32) -> Self {
+    pub fn new(id: u32, settings: &Settings) -> Self {
         Self {
             id,
             position: Vec2::new(
@@ -44,13 +40,13 @@ impl Boid {
                 random_range(-(WINDOW_HEIGHT as f32 / 2.0), WINDOW_HEIGHT as f32 / 2.0) as f32,
             ),
             velocity: Vec2::X.rotate(random_range(0.0, TAU))
-                * random_range(BOID_MIN_SPEED, BOID_MAX_SPEED),
+                * random_range(settings.boid_min_speed, settings.boid_max_speed),
             acceleration: Vec2::ZERO,
             party: Party::random(),
         }
     }
 
-    pub fn next(&self, dt: Update, boids: &[Boid]) -> Boid {
+    pub fn next(&self, dt: Update, boids: &[Boid], settings: &Settings) -> Boid {
         let mut boid = self.clone();
 
         let mut alignment_heading = Vec2::ZERO;
@@ -65,27 +61,29 @@ impl Boid {
             }
 
             let distance_squared = self.position.distance_squared(other.position);
-            if distance_squared > BOID_VIEW_RADIUS.pow(2) {
+            if distance_squared > settings.boid_view_radius.pow(2) {
                 return;
             }
 
             count += 1;
 
             let mut alignment_add = other.velocity;
+            let mut cohesion_add = other.position - self.position;
 
             if self.party.is_some() && self.party == other.party {
-                alignment_add *= PREFERENCE_MULTIPLIER;
+                alignment_add *= settings.preference_multiplier;
+                cohesion_add *= settings.preference_multiplier;
             }
 
             alignment_heading += other.velocity;
             cohesion_heading += other.position - self.position;
 
             if self.party.is_some() && other.party.is_some() && self.party != other.party {
-                separation_heading -=
-                    (other.position - self.position) / distance_squared * AVOIDANCE_MULTIPLIER;
+                separation_heading -= (other.position - self.position) / distance_squared
+                    * settings.avoidance_multiplier;
             }
 
-            if distance_squared > BOID_AVOID_RADIUS.pow(2) {
+            if distance_squared > settings.boid_avoid_radius.pow(2) {
                 return;
             }
 
@@ -95,45 +93,47 @@ impl Boid {
         boid.acceleration = Vec2::ZERO;
 
         if alignment_heading != Vec2::ZERO {
-            boid.steer_towards(alignment_heading, ALIGNMENT_WEIGHT);
+            boid.steer_towards(alignment_heading, settings.alignment_weight, settings);
         }
         if cohesion_heading != Vec2::ZERO && count > 0 {
             cohesion_heading /= count as f32;
-            boid.steer_towards(cohesion_heading, COHESION_WEIGHT);
+            boid.steer_towards(cohesion_heading, settings.cohesion_weight, settings);
         }
         if separation_heading != Vec2::ZERO {
-            boid.steer_towards(separation_heading, SEPARATION_WEIGHT);
+            boid.steer_towards(separation_heading, settings.separation_weight, settings);
         }
 
         // avoid borders
-        if boid.position.x < -(WINDOW_WIDTH as f32 / 2.0) + BOID_AVOID_RADIUS {
-            boid.steer_towards(Vec2::X, BORDER_WEIGHT);
+        if boid.position.x < -(WINDOW_WIDTH as f32 / 2.0) + settings.boid_avoid_radius {
+            boid.steer_towards(Vec2::X, settings.border_weight, settings);
         }
-        if boid.position.x > WINDOW_WIDTH as f32 / 2.0 - BOID_AVOID_RADIUS {
-            boid.steer_towards(-Vec2::X, BORDER_WEIGHT);
+        if boid.position.x > WINDOW_WIDTH as f32 / 2.0 - settings.boid_avoid_radius {
+            boid.steer_towards(-Vec2::X, settings.border_weight, settings);
         }
-        if boid.position.y < -(WINDOW_HEIGHT as f32 / 2.0) + BOID_AVOID_RADIUS {
-            boid.steer_towards(Vec2::Y, BORDER_WEIGHT);
+        if boid.position.y < -(WINDOW_HEIGHT as f32 / 2.0) + settings.boid_avoid_radius {
+            boid.steer_towards(Vec2::Y, settings.border_weight, settings);
         }
-        if boid.position.y > WINDOW_HEIGHT as f32 / 2.0 - BOID_AVOID_RADIUS {
-            boid.steer_towards(-Vec2::Y, BORDER_WEIGHT);
+        if boid.position.y > WINDOW_HEIGHT as f32 / 2.0 - settings.boid_avoid_radius {
+            boid.steer_towards(-Vec2::Y, settings.border_weight, settings);
         }
 
         boid.velocity += boid.acceleration * dt.since_last.as_secs_f32();
-        boid.velocity = boid.velocity.clamp_length(BOID_MIN_SPEED, BOID_MAX_SPEED);
+        boid.velocity = boid
+            .velocity
+            .clamp_length(settings.boid_min_speed, settings.boid_max_speed);
 
         boid.position += boid.velocity * dt.since_last.as_secs_f32();
 
-        if random_f32() < MUTATION_RATE * dt.since_last.as_secs_f32() {
+        if random_f32() < settings.mutation_rate * dt.since_last.as_secs_f32() {
             boid.party = Party::random();
         }
 
         boid
     }
 
-    fn steer_towards(&mut self, direction: Vec2, weight: f32) {
-        self.acceleration += (direction.normalize() * BOID_MAX_SPEED - self.velocity)
-            .clamp_length_max(BOID_STEER_FORCE)
+    fn steer_towards(&mut self, direction: Vec2, weight: f32, settings: &Settings) {
+        self.acceleration += (direction.normalize() * settings.boid_max_speed - self.velocity)
+            .clamp_length_max(settings.boid_steer_force)
             * weight;
     }
 }

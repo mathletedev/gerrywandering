@@ -1,14 +1,14 @@
 pub mod boid;
-pub mod config;
 pub mod event;
 pub mod model;
+pub mod settings;
 pub mod update;
 pub mod view;
 
 use boid::Boid;
-use config::{NUM_BOIDS, WINDOW_HEIGHT, WINDOW_WIDTH};
 use model::Model;
 use nannou::prelude::*;
+use settings::{Settings, NUM_BOIDS, WINDOW_HEIGHT, WINDOW_WIDTH};
 
 fn main() {
     nannou::app(model)
@@ -18,6 +18,8 @@ fn main() {
 }
 
 fn model(app: &App) -> Model {
+    let settings = Settings::default();
+
     let window = app
         .new_window()
         .resizable(false)
@@ -27,7 +29,11 @@ fn model(app: &App) -> Model {
         .build()
         .unwrap();
 
-    let boids = (0..NUM_BOIDS).map(Boid::new).collect();
+    let boids = (0..NUM_BOIDS).map(|i| Boid::new(i, &settings)).collect();
 
-    Model { window, boids }
+    Model {
+        window,
+        settings,
+        boids,
+    }
 }
