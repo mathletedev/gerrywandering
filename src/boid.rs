@@ -3,8 +3,8 @@ use std::f32::consts::TAU;
 use nannou::prelude::*;
 
 use crate::config::{
-    ALIGNMENT_WEIGHT, BOID_MAX_SPEED, BOID_MIN_SPEED, BOID_STEER_FORCE, BOID_VIEW_RADIUS,
-    WINDOW_HEIGHT, WINDOW_WIDTH,
+    ALIGNMENT_WEIGHT, BOID_AVOID_RADIUS, BOID_MAX_SPEED, BOID_MIN_SPEED, BOID_STEER_FORCE,
+    BOID_VIEW_RADIUS, SEPARATION_WEIGHT, WINDOW_HEIGHT, WINDOW_WIDTH,
 };
 
 #[derive(Clone)]
@@ -32,21 +32,36 @@ impl Boid {
     pub fn next(&self, dt: Update, boids: &[Boid]) -> Boid {
         let mut boid = self.clone();
 
-        let mut avg_heading = Vec2::ZERO;
+        let mut alignment_heading = Vec2::ZERO;
+        let mut separation_heading = Vec2::ZERO;
 
         boids.iter().for_each(|other| {
-            if self.position.distance_squared(other.position) > BOID_VIEW_RADIUS.pow(2) {
+            if self.id == other.id || self.position == other.position {
                 return;
             }
 
-            avg_heading += other.velocity;
+            let distance_squared = self.position.distance_squared(other.position);
+            if distance_squared > BOID_VIEW_RADIUS.pow(2) {
+                return;
+            }
+
+            alignment_heading += other.velocity;
+
+            if distance_squared > BOID_AVOID_RADIUS.pow(2) {
+                return;
+            }
+
+            separation_heading += (self.position - other.position) / distance_squared;
         });
 
         boid.acceleration = Vec2::ZERO;
 
-        let alignment_force = self.steer_towards(avg_heading) * ALIGNMENT_WEIGHT;
-
-        boid.acceleration += alignment_force;
+        if alignment_heading != Vec2::ZERO {
+            boid.acceleration += self.steer_towards(alignment_heading) * ALIGNMENT_WEIGHT;
+        }
+        if separation_heading != Vec2::ZERO {
+            boid.acceleration += self.steer_towards(separation_heading) * SEPARATION_WEIGHT;
+        }
 
         boid.velocity += boid.acceleration * dt.since_last.as_secs_f32();
         boid.velocity = boid.velocity.clamp_length(BOID_MIN_SPEED, BOID_MAX_SPEED);
