@@ -15,4 +15,7 @@ pub const COHESION_WEIGHT: f32 = 0.5;
 pub const SEPARATION_WEIGHT: f32 = 5.0;
 pub const BORDER_WEIGHT: f32 = 10.0;
 
+pub const PREFERENCE_MULTIPLIER: f32 = 2.0;
+pub const AVOIDANCE_MULTIPLIER: f32 = 10.0;
+
 pub const BOID_SIZE: f32 = 10.0;

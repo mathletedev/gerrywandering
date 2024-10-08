@@ -3,10 +3,16 @@ use std::f32::consts::TAU;
 use nannou::prelude::*;
 
 use crate::config::{
-    ALIGNMENT_WEIGHT, BOID_AVOID_RADIUS, BOID_MAX_SPEED, BOID_MIN_SPEED, BOID_STEER_FORCE,
-    BOID_VIEW_RADIUS, BORDER_WEIGHT, COHESION_WEIGHT, SEPARATION_WEIGHT, WINDOW_HEIGHT,
-    WINDOW_WIDTH,
+    ALIGNMENT_WEIGHT, AVOIDANCE_MULTIPLIER, BOID_AVOID_RADIUS, BOID_MAX_SPEED, BOID_MIN_SPEED,
+    BOID_STEER_FORCE, BOID_VIEW_RADIUS, BORDER_WEIGHT, COHESION_WEIGHT, PREFERENCE_MULTIPLIER,
+    SEPARATION_WEIGHT, WINDOW_HEIGHT, WINDOW_WIDTH,
 };
+
+#[derive(Clone, PartialEq)]
+pub enum Party {
+    RED,
+    BLUE,
+}
 
 #[derive(Clone)]
 pub struct Boid {
@@ -14,6 +20,7 @@ pub struct Boid {
     pub position: Vec2,
     pub velocity: Vec2,
     pub acceleration: Vec2,
+    pub party: Option<Party>,
 }
 
 impl Boid {
@@ -27,6 +34,13 @@ impl Boid {
             velocity: Vec2::X.rotate(random_range(0.0, TAU))
                 * random_range(BOID_MIN_SPEED, BOID_MAX_SPEED),
             acceleration: Vec2::ZERO,
+            party: if random_f32() < 0.1 {
+                None
+            } else if random_f32() < 0.5 {
+                Some(Party::RED)
+            } else {
+                Some(Party::BLUE)
+            },
         }
     }
 
@@ -51,8 +65,19 @@ impl Boid {
 
             count += 1;
 
+            let mut alignment_add = other.velocity;
+
+            if self.party.is_some() && self.party == other.party {
+                alignment_add *= PREFERENCE_MULTIPLIER;
+            }
+
             alignment_heading += other.velocity;
             cohesion_heading += other.position - self.position;
+
+            if self.party.is_some() && other.party.is_some() && self.party != other.party {
+                separation_heading -=
+                    (other.position - self.position) / distance_squared * AVOIDANCE_MULTIPLIER;
+            }
 
             if distance_squared > BOID_AVOID_RADIUS.pow(2) {
                 return;
