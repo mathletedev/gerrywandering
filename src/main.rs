@@ -1,39 +1,33 @@
 pub mod boid;
-pub mod vector;
+pub mod config;
+pub mod event;
+pub mod model;
+pub mod update;
+pub mod view;
 
+use boid::Boid;
+use config::{WINDOW_HEIGHT, WINDOW_WIDTH};
+use model::Model;
 use nannou::prelude::*;
 
-struct Model {
-    window: WindowId,
-}
-
 fn main() {
-    nannou::app(model).run();
+    nannou::app(model)
+        .event(event::event)
+        .update(update::update)
+        .run();
 }
 
 fn model(app: &App) -> Model {
     let window = app
         .new_window()
-        .size(512, 512)
+        .resizable(false)
+        .size(WINDOW_WIDTH, WINDOW_HEIGHT)
         .title("Gerrywandering")
-        .view(view)
-        .event(event)
+        .view(view::view)
         .build()
         .unwrap();
 
-    Model { window }
-}
+    let boids = (0..100).map(|_| Boid::default()).collect();
 
-fn event(_app: &App, _model: &mut Model, event: WindowEvent) {
-    println!("{:?}", event);
-}
-
-fn view(app: &App, _model: &Model, frame: Frame) {
-    let draw = app.draw();
-
-    draw.background().color(BLACK);
-
-    draw.rect().x_y(0.0, 0.0).w(10.0).color(WHITE);
-
-    draw.to_frame(app, &frame).unwrap();
+    Model { window, boids }
 }
