@@ -27,7 +27,7 @@ fn model(app: &App) -> Model {
         .build()
         .unwrap();
 
-    let boids = (0..100).map(|_| Boid::default()).collect();
+    let boids = (0..100).map(Boid::new).collect();
 
     Model { window, boids }
 }
