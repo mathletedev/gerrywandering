@@ -102,12 +102,12 @@ pub fn count_parties(node: MutNodeRef, bounds: Bounds, boids: &[Boid]) {
         );
 
         if let Some(left) = &node.left {
-            (0..NUM_PARTIES).into_iter().for_each(|i| {
+            (0..NUM_PARTIES).for_each(|i| {
                 node.party_count[i] += left.party_count[i];
             });
         }
         if let Some(right) = &node.right {
-            (0..NUM_PARTIES).into_iter().for_each(|i| {
+            (0..NUM_PARTIES).for_each(|i| {
                 node.party_count[i] += right.party_count[i];
             });
         }
