@@ -137,3 +137,29 @@ pub fn count_parties(node: MutNodeRef, bounds: Bounds, boids: &[Boid]) {
 
     node.party_count = party_count;
 }
+
+pub fn count_districts(node: &Option<Box<Node>>) -> [u32; NUM_PARTIES] {
+    let mut res = [0; NUM_PARTIES];
+
+    let node = match node {
+        Some(node) => node,
+        None => return res,
+    };
+
+    if node.left.is_none() && node.right.is_none() {
+        match favours(node.party_count) {
+            Some(Party::RED) => return [1, 0],
+            Some(Party::BLUE) => return [0, 1],
+            None => return [0, 0],
+        };
+    }
+
+    let left = count_districts(&node.left);
+    let right = count_districts(&node.right);
+
+    (0..NUM_PARTIES).for_each(|i| {
+        res[i] += left[i] + right[i];
+    });
+
+    res
+}

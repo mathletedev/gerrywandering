@@ -9,7 +9,7 @@ pub const BOID_SIZE: f32 = 10.0;
 
 pub const NUM_PARTIES: usize = 2;
 
-pub const DISTRICT_MIN_SIZE: f32 = WINDOW_WIDTH as f32 / 16.0;
+pub const DISTRICT_MIN_SIZE: f32 = WINDOW_WIDTH as f32 / 10.0;
 
 pub struct Settings {
     pub boid_max_speed: f32,

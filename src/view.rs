@@ -43,10 +43,6 @@ fn draw_districts(node: &Option<Box<Node>>, draw: &Draw) {
         None => return,
     };
 
-    // draw.text(format!("Red: {}\nBlue: {}", node.party_count.0, node.party_count.1).as_str())
-    //     .x(node.bounds.left + node.bounds.width / 2.0)
-    //     .y(node.bounds.bottom + node.bounds.height / 2.0);
-
     draw_districts(&node.left, draw);
     draw_districts(&node.right, draw);
 
@@ -70,9 +66,19 @@ fn draw_districts(node: &Option<Box<Node>>, draw: &Draw) {
             alpha: if total == 0 {
                 0
             } else {
-                (node.party_count.iter().max().unwrap() / total * 100) as u8
+                (*node.party_count.iter().max().unwrap() as f32 / total as f32 * 100.0) as u8
             },
         })
         .stroke_weight(2.0)
         .stroke(WHITE);
+
+    // draw.text(
+    //     format!(
+    //         "Red: {}\nBlue: {}",
+    //         node.party_count[0], node.party_count[1]
+    //     )
+    //     .as_str(),
+    // )
+    // .x(node.bounds.left + node.bounds.width / 2.0)
+    // .y(node.bounds.bottom + node.bounds.height / 2.0);
 }
