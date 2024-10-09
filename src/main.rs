@@ -1,5 +1,6 @@
 pub mod boid;
 pub mod event;
+pub mod gerrymander;
 pub mod model;
 pub mod settings;
 pub mod update;
@@ -41,5 +42,6 @@ fn model(app: &App) -> Model {
         egui,
         settings,
         boids,
+        districts_tree: None,
     }
 }

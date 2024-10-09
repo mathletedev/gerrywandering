@@ -4,7 +4,7 @@ use nannou::prelude::*;
 
 use crate::settings::{Settings, WINDOW_HEIGHT, WINDOW_WIDTH};
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Party {
     RED,
     BLUE,
