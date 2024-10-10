@@ -1,6 +1,6 @@
 use crate::{
     boid::{Boid, Party},
-    settings::{DISTRICT_MIN_SIZE, NUM_PARTIES},
+    settings::{Settings, NUM_PARTIES, WINDOW_WIDTH},
 };
 
 #[derive(Clone, Copy, Default)]
@@ -54,7 +54,7 @@ pub fn gerrymander(node: MutNodeRef, favour: Party) {
     }
 }
 
-pub fn count_parties(node: MutNodeRef, bounds: Bounds, boids: &[Boid]) {
+pub fn count_parties(node: MutNodeRef, bounds: Bounds, boids: &[Boid], settings: &Settings) {
     let node = match node {
         Some(node) => node,
         None => return,
@@ -62,7 +62,7 @@ pub fn count_parties(node: MutNodeRef, bounds: Bounds, boids: &[Boid]) {
 
     node.bounds = bounds;
 
-    if bounds.width.min(bounds.height) > DISTRICT_MIN_SIZE {
+    if bounds.width.min(bounds.height) > WINDOW_WIDTH as f32 * settings.district_min_size {
         node.left = Some(Box::default());
         node.right = Some(Box::default());
 
@@ -89,6 +89,7 @@ pub fn count_parties(node: MutNodeRef, bounds: Bounds, boids: &[Boid]) {
                 height,
             },
             boids,
+            settings,
         );
         count_parties(
             &mut node.right,
@@ -99,6 +100,7 @@ pub fn count_parties(node: MutNodeRef, bounds: Bounds, boids: &[Boid]) {
                 height,
             },
             boids,
+            settings,
         );
 
         if let Some(left) = &node.left {

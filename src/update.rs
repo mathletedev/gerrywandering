@@ -57,6 +57,12 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
 
         ui.separator();
 
+        ui.label("Minimum district size:");
+        ui.add(egui::Slider::new(
+            &mut settings.district_min_size,
+            0.01..=1.0,
+        ));
+
         ui.label("Favour:");
         ui.horizontal(|ui| {
             ui.selectable_value(&mut settings.favour, Party::RED, "Red");
@@ -86,6 +92,7 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
                         height: WINDOW_HEIGHT as f32,
                     },
                     &model.boids,
+                    settings,
                 );
 
                 gerrymander(&mut model.districts_tree, settings.favour);

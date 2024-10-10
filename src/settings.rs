@@ -3,13 +3,11 @@ use crate::boid::Party;
 pub const WINDOW_WIDTH: u32 = 1024;
 pub const WINDOW_HEIGHT: u32 = 1024;
 
-pub const NUM_BOIDS: u32 = 100;
+pub const NUM_BOIDS: u32 = 200;
 
 pub const BOID_SIZE: f32 = 10.0;
 
 pub const NUM_PARTIES: usize = 2;
-
-pub const DISTRICT_MIN_SIZE: f32 = WINDOW_WIDTH as f32 / 10.0;
 
 pub struct Settings {
     pub boid_max_speed: f32,
@@ -30,6 +28,7 @@ pub struct Settings {
     pub mutation_rate: f32, // probability of switching to another party (multiplied by dt)
 
     pub num_districts: u32,
+    pub district_min_size: f32,
     pub favour: Party,
 
     pub paused: bool,
@@ -56,6 +55,7 @@ impl Default for Settings {
             mutation_rate: 0.1,
 
             num_districts: 4,
+            district_min_size: 0.05,
             favour: Party::RED,
 
             paused: false,
