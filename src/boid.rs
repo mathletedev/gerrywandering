@@ -20,6 +20,13 @@ impl Party {
             Some(Party::BLUE)
         }
     }
+
+    pub fn to_usize(&self) -> usize {
+        match self {
+            Party::RED => 0,
+            Party::BLUE => 1,
+        }
+    }
 }
 
 #[derive(Clone)]

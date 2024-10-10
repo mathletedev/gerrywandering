@@ -14,6 +14,8 @@ pub struct Bounds {
 #[derive(Default)]
 pub struct Node {
     pub party_count: [u32; NUM_PARTIES],
+    pub districts_count: [u32; NUM_PARTIES],
+    pub favours: Option<Party>,
     pub bounds: Bounds,
     pub left: Option<Box<Node>>,
     pub right: Option<Box<Node>>,
@@ -48,7 +50,14 @@ pub fn gerrymander(node: MutNodeRef, favour: Party) {
         None => return,
     };
 
-    if favours(left.party_count) != Some(favour) && favours(right.party_count) != Some(favour) {
+    let index = favour.to_usize();
+
+    if node.bounds.width != WINDOW_WIDTH as f32
+        && left.districts_count[index] < *left.districts_count.iter().max().unwrap()
+        && right.districts_count[index] < *right.districts_count.iter().max().unwrap()
+        || left.favours.is_none()
+        || right.favours.is_none()
+    {
         node.left = None;
         node.right = None;
     }
@@ -106,13 +115,17 @@ pub fn count_parties(node: MutNodeRef, bounds: Bounds, boids: &[Boid], settings:
         if let Some(left) = &node.left {
             (0..NUM_PARTIES).for_each(|i| {
                 node.party_count[i] += left.party_count[i];
+                node.districts_count[i] += left.districts_count[i];
             });
         }
         if let Some(right) = &node.right {
             (0..NUM_PARTIES).for_each(|i| {
                 node.party_count[i] += right.party_count[i];
+                node.districts_count[i] += right.districts_count[i];
             });
         }
+
+        node.favours = favours(node.party_count);
 
         return;
     }
@@ -138,10 +151,17 @@ pub fn count_parties(node: MutNodeRef, bounds: Bounds, boids: &[Boid], settings:
     });
 
     node.party_count = party_count;
+    node.districts_count = match favours(party_count) {
+        Some(Party::RED) => [1, 0],
+        Some(Party::BLUE) => [0, 1],
+        None => [0, 0],
+    };
+
+    node.favours = favours(party_count);
 }
 
-pub fn count_districts(node: &Option<Box<Node>>) -> [u32; NUM_PARTIES] {
-    let mut res = [0; NUM_PARTIES];
+pub fn count_districts(node: &Option<Box<Node>>) -> [u32; NUM_PARTIES + 1] {
+    let mut res = [0; NUM_PARTIES + 1];
 
     let node = match node {
         Some(node) => node,
@@ -150,16 +170,16 @@ pub fn count_districts(node: &Option<Box<Node>>) -> [u32; NUM_PARTIES] {
 
     if node.left.is_none() && node.right.is_none() {
         match favours(node.party_count) {
-            Some(Party::RED) => return [1, 0],
-            Some(Party::BLUE) => return [0, 1],
-            None => return [0, 0],
+            Some(Party::RED) => return [1, 0, 0],
+            Some(Party::BLUE) => return [0, 1, 0],
+            None => return [0, 0, 1],
         };
     }
 
     let left = count_districts(&node.left);
     let right = count_districts(&node.right);
 
-    (0..NUM_PARTIES).for_each(|i| {
+    (0..NUM_PARTIES + 1).for_each(|i| {
         res[i] += left[i] + right[i];
     });
 

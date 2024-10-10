@@ -47,13 +47,17 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
         ui.label(format!("# blue: {}", num_blue));
         ui.label(format!("# none: {}", num_none));
 
-        let mut num_districts = [0; NUM_PARTIES];
+        let mut num_districts = [0; NUM_PARTIES + 1];
         if settings.paused {
             num_districts = count_districts(&model.districts_tree);
         }
 
         ui.label(format!("# red districts: {}", num_districts[0]));
         ui.label(format!("# blue districts: {}", num_districts[1]));
+        ui.label(format!(
+            "# total districts: {}",
+            num_districts.iter().sum::<u32>()
+        ));
 
         ui.separator();
 

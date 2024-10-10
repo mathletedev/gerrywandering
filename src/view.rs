@@ -66,7 +66,8 @@ fn draw_districts(node: &Option<Box<Node>>, draw: &Draw) {
             alpha: if total == 0 {
                 0
             } else {
-                (*node.party_count.iter().max().unwrap() as f32 / total as f32 * 100.0) as u8
+                ((*node.party_count.iter().max().unwrap() as f32 / total as f32 - 0.4) * 200.0)
+                    as u8
             },
         })
         .stroke_weight(2.0)
@@ -75,7 +76,7 @@ fn draw_districts(node: &Option<Box<Node>>, draw: &Draw) {
     // draw.text(
     //     format!(
     //         "Red: {}\nBlue: {}",
-    //         node.party_count[0], node.party_count[1]
+    //         node.districts_count[0], node.districts_count[1]
     //     )
     //     .as_str(),
     // )
