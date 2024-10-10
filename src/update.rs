@@ -33,6 +33,11 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
 
         ui.separator();
 
+        ui.add(egui::Checkbox::new(
+            &mut settings.use_parties,
+            "Use parties",
+        ));
+
         let mut num_red = 0;
         let mut num_blue = 0;
         let mut num_none = 0;
@@ -43,19 +48,19 @@ pub fn update(_app: &App, model: &mut Model, update: Update) {
             None => num_none += 1,
         });
 
-        ui.label(format!("# red: {}", num_red));
-        ui.label(format!("# blue: {}", num_blue));
-        ui.label(format!("# none: {}", num_none));
+        ui.label(format!("Red boids: {}", num_red));
+        ui.label(format!("Blue boids: {}", num_blue));
+        ui.label(format!("Other boids: {}", num_none));
 
         let mut num_districts = [0; NUM_PARTIES + 1];
         if settings.paused {
             num_districts = count_districts(&model.districts_tree);
         }
 
-        ui.label(format!("# red districts: {}", num_districts[0]));
-        ui.label(format!("# blue districts: {}", num_districts[1]));
+        ui.label(format!("Red districts: {}", num_districts[0]));
+        ui.label(format!("Blue districts: {}", num_districts[1]));
         ui.label(format!(
-            "# total districts: {}",
+            "Total districts: {}",
             num_districts.iter().sum::<u32>()
         ));
 

@@ -22,6 +22,7 @@ pub struct Settings {
     pub separation_weight: f32,
     pub border_weight: f32, // avoidance of border
 
+    pub use_parties: bool,
     pub preference_multiplier: f32, // alignment & cohesion to same party
     pub avoidance_multiplier: f32,  // separation from opposite party
 
@@ -49,6 +50,7 @@ impl Default for Settings {
             separation_weight: 5.0,
             border_weight: 10.0,
 
+            use_parties: true,
             preference_multiplier: 2.0,
             avoidance_multiplier: 10.0,
 

@@ -77,7 +77,7 @@ impl Boid {
             let mut alignment_add = other.velocity;
             let mut cohesion_add = other.position - self.position;
 
-            if self.party.is_some() && self.party == other.party {
+            if settings.use_parties && self.party.is_some() && self.party == other.party {
                 alignment_add *= settings.preference_multiplier;
                 cohesion_add *= settings.preference_multiplier;
             }
@@ -85,7 +85,11 @@ impl Boid {
             alignment_heading += other.velocity;
             cohesion_heading += other.position - self.position;
 
-            if self.party.is_some() && other.party.is_some() && self.party != other.party {
+            if settings.use_parties
+                && self.party.is_some()
+                && other.party.is_some()
+                && self.party != other.party
+            {
                 separation_heading -= (other.position - self.position) / distance_squared
                     * settings.avoidance_multiplier;
             }
