@@ -1,11 +1,11 @@
 { pkgs ? import <nixpkgs> { }, lib ? pkgs.lib }:
 
-with pkgs; mkShell rec {
-  nativeBuildInputs = [
+pkgs.mkShell rec {
+  nativeBuildInputs = with pkgs; [
     pkg-config
   ];
 
-  buildInputs = [
+  buildInputs = with pkgs; [
     alsa-lib
     libGL
     udev
