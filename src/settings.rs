@@ -52,7 +52,7 @@ impl Default for Settings {
 
             use_parties: true,
             preference_multiplier: 2.0,
-            avoidance_multiplier: 10.0,
+            avoidance_multiplier: 2.0,
 
             mutation_rate: 0.1,
 

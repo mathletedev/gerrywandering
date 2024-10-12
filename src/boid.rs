@@ -82,8 +82,8 @@ impl Boid {
                 cohesion_add *= settings.preference_multiplier;
             }
 
-            alignment_heading += other.velocity;
-            cohesion_heading += other.position - self.position;
+            alignment_heading += alignment_add;
+            cohesion_heading += cohesion_add;
 
             if settings.use_parties
                 && self.party.is_some()

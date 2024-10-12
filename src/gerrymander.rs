@@ -52,6 +52,7 @@ pub fn gerrymander(node: MutNodeRef, favour: Party) {
 
     let index = favour.to_usize();
 
+    // "packing" opposite-party districts
     if node.bounds.width != WINDOW_WIDTH as f32
         && left.districts_count[index] < *left.districts_count.iter().max().unwrap()
         && right.districts_count[index] < *right.districts_count.iter().max().unwrap()
@@ -72,6 +73,7 @@ pub fn count_parties(node: MutNodeRef, bounds: Bounds, boids: &[Boid], settings:
     node.bounds = bounds;
 
     if bounds.width.min(bounds.height) > WINDOW_WIDTH as f32 * settings.district_min_size {
+        // "cracking" districts
         node.left = Some(Box::default());
         node.right = Some(Box::default());
 
