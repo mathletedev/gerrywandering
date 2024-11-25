@@ -2,9 +2,11 @@
 
 > An intuitive explanation of gerrymandering through a mathematical model.
 
-⭐ Winner of the 2024 Congressional App Challege!
+⭐ Winner of the 2024 Congressional App Challenge!
 
 Video analysis: https://www.youtube.com/watch?v=B1UjuttHhng
+
+![gerrywandering logo](https://github.com/user-attachments/assets/17cb87f5-d258-44af-9ff8-4e7209c2e0e5)
 
 ## Gerrymandering: Binary Merge Algorithm
 
