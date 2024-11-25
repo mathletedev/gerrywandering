@@ -23,12 +23,8 @@ Video analysis: https://www.youtube.com/watch?v=B1UjuttHhng
 
 ## Works Cited
 
-Reynolds, Craig. “Flocks, Herds, and Schools: A Distributed Behavioral Model.” \
-    *University of Toronto*, Computer Graphics, July 1987, \
-    www.cs.toronto.edu/~dt/siggraph97-course/cwr87/. 
+Reynolds, Craig. “Flocks, Herds, and Schools: A Distributed Behavioral Model.” *University of Toronto*, Computer Graphics, July 1987, www.cs.toronto.edu/~dt/siggraph97-course/cwr87. 
 
-"Coding Adventure: Boids." *YouTube*, uploaded by Sebastian Lague, 26 Aug. 2019, \
-    www.youtube.com/watch?v=bqtqltqcQhw.
+"Coding Adventure: Boids." *YouTube*, uploaded by Sebastian Lague, 26 Aug. 2019, www.youtube.com/watch?v=bqtqltqcQhw.
 
-"Coding Challenge 124: Flocking Simulation." *YouTube*, uploaded by The Coding \
-    Train, 11 Dec. 2018, www.youtube.com/watch?v=mhjuuHl6qHM.
+"Coding Challenge 124: Flocking Simulation." *YouTube*, uploaded by The Coding Train, 11 Dec. 2018, www.youtube.com/watch?v=mhjuuHl6qHM.
