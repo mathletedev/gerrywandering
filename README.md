@@ -2,7 +2,7 @@
 
 > An intuitive explanation of gerrymandering through a mathematical model.
 
-⭐ Winner of the 2024 Congressional App Challenge!
+⭐ Winner of the [2024 Congressional App Challenge](https://www.congressionalappchallenge.us/2024-winners/#Washington)!
 
 Video analysis: https://www.youtube.com/watch?v=B1UjuttHhng
 
